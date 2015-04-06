@@ -2,6 +2,7 @@ exp1 : local minimum 	-done
 
 exp2 : t-SNE			-done
 exp3 : visual output
+linear path
 
 exp4 : DQN						learn rate
 	- oracle lr??
