@@ -1,11 +1,13 @@
-all:baseline.cpp
-	g++ -std=c++11 baseline.cpp
+INCLUDE = -I src
+
+all:
+	g++ -std=c++11 $(INCLUDE) src/baseline.cpp
 O3:
-	g++ -O3 -std=c++11 baseline.cpp
+	g++ -O3 -std=c++11 $(INCLUDE) src/baseline.cpp
 D:
-	g++ -O3 -DDEBUG -g -std=c++11 baseline.cpp
+	g++ -O3 -DDEBUG -g -std=c++11 $(INCLUDE) src/baseline.cpp
 exp1:exp/exp1.cpp
-	g++ -O3 -std=c++11 exp/exp1.cpp -o exp/exp1
+	g++ -O3 -std=c++11 $(INCLUDE) exp/exp1.cpp -o exp/exp1
 test:exp/test.cpp
-	g++ -O3 -std=c++11 exp/test.cpp -o exp/test
+	g++ -O3 -std=c++11 $(INCLUDE) exp/test.cpp -o exp/test
 clean:
