@@ -14,7 +14,7 @@ main(){
 	int hidSize = 128;
 	float lamda = 0; // L2-reg
 
-	string dir("./libdnn_material/");
+	string dir("../libdnn_material/");
 	ofstream fout("./myResult.csv");
 	ofstream mout("./model");
 
