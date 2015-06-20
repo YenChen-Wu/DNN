@@ -489,7 +489,6 @@ LABEL       classify_struct_example(PATTERN x, STRUCTMODEL *sm,
 	  trans[index_h+index_m*target+source]+=trans[index_l+source];
     index_l+=index_m;
   }
-
   if(sparm->n_best==0){		// original code
     y.labels=viterbi(trans,emit,length,classes,
 		   sparm->hmm_trans_order,sparm->hmm_emit_order,
