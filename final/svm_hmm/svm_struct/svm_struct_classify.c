@@ -119,8 +119,8 @@ int main (int argc, char* argv[])
   if((!no_accuracy) && (struct_verbosity>=1)) {
     printf("Average loss on test set: %.4f\n",(float)avgloss);
     printf("Zero/one-error on test set: %.2f%% (%ld correct, %ld incorrect, %d total)\n",(float)100.0*incorrect/testsample.n,correct,incorrect,testsample.n);
+    print_struct_testing_stats(testsample,&model,&sparm,&teststats);
   }
-  //print_struct_testing_stats(testsample,&model,&sparm,&teststats);
   free_struct_sample(testsample);
   free_struct_model(model);
 

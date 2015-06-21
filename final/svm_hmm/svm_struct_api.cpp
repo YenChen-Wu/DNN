@@ -489,19 +489,28 @@ LABEL       classify_struct_example(PATTERN x, STRUCTMODEL *sm,
 	  trans[index_h+index_m*target+source]+=trans[index_l+source];
     index_l+=index_m;
   }
-  if(sparm->n_best==0){		// original code
-    y.labels=viterbi(trans,emit,length,classes,
-		   sparm->hmm_trans_order,sparm->hmm_emit_order,
-		   sparm->beam_width);
+
+  if(sparm->n_lattice>0){          // n_lattice wrong code
+//cout << "n lattice" << endl;
+    //y.labels=NLATTICE(trans,emit,length,classes,sparm->n_best); // wrong
+    y.labels=NBEST(trans,emit,length,classes,sparm->n_best,sparm->n_list);
     y.length=length;
-    y.n = 1;
+    y.n = sparm->n_lattice;
   }
-  else{
+  else if(sparm->n_best>0){        // n_best code
+//cout << "n best" << endl;
     sparm->n_list = sparm->n_best;
     y.labels=NBEST(trans,emit,length,classes,sparm->n_best,sparm->n_list);
-    //y.labels=viterbi_n_best(trans,emit,length,classes,sparm->n_best);
     y.length=length;
     y.n = sparm->n_list;
+  }
+  else{                     // original code
+//cout << "viterbi" <<endl;
+    y.labels=viterbi(trans,emit,length,classes,
+           sparm->hmm_trans_order,sparm->hmm_emit_order,
+           sparm->beam_width);
+    y.length=length;
+    y.n = 1;
   }
 
   for(i=0;i<length;i++) 
