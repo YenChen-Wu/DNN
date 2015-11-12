@@ -6,7 +6,7 @@ import os,sys,random,time
 import argparse
 rng = np.random
 ####################
-data_dir = 'data/'
+data_dir = '../data/'
 #hidden layer topology
 nH = [69,512,48]
 batch_size = 128
@@ -14,7 +14,7 @@ learning_rate = sys.argv[2] #0.5
 lr_decay = 1    # useless..
 nEpoch = 20
 method = sys.argv[1]
-activ = T.nnet.relu
+activH = T.nnet.relu
 #activ = T.nnet.sigmoid   # T.nnet.ultra_fast_sigmoid    T.nnet.hard_sigmoid()   T.nnet.relu()
 #activ = T.tanh          # lr = 0.2
 ####################
@@ -38,7 +38,7 @@ def print_info():
     print "Learning Rate: ", learning_rate
     print "Number of Epoch: ", nEpoch
     print "Update Method: ", method
-    print "Activation Function: ", activ
+    print "Activation Function: ", activH
     print "Momentum: ", momentum
 
 def load_data(ark):
@@ -77,16 +77,17 @@ class SimpleNet():
         self.predict = theano.function(inputs= [index], outputs= [nerr,pred], givens = givens)
 
     def build_DNN(self,nL):
-        # init
         for i in xrange(len(nL)-1):
             r = np.sqrt(6.0/(nL[i]+nL[i+1]))
             self.w.append(theano.shared(np.asarray(rng.uniform(-r,r,(nL[i],nL[i+1])),dtype=theano.config.floatX),name='w'+str(i),borrow=True))
             self.b.append(theano.shared(np.asarray(rng.uniform(-r,r,(nL[i+1])),dtype=theano.config.floatX),name='b'+str(i),borrow=True))
-	    # feedforward  TODO last layer no activ
-        for i in xrange(len(nL)-1):
-            self.h.append(activ(T.dot(self.h[i], self.w[i]) + self.b[i]))
-	    # softmax
-        return T.nnet.softmax(self.h[-1])
+            if i==len(nL)-2:
+                return T.nnet.softmax( T.dot(self.h[i], self.w[i]) + self.b[i] )
+            self.h.append(activH(T.dot(self.h[i], self.w[i]) + self.b[i]))
+        #    if i==len(nL)-2:
+        #        activ=T.nnet.softmax
+        #    self.h.append(activ(T.dot(self.h[i], self.w[i]) + self.b[i]))
+        #return self.h[-1]
 
 def my_updates(param,grads):
     updates = []
