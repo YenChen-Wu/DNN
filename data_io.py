@@ -30,3 +30,6 @@ save_feat('test_sent')
 #    print feat[sent].shape
     
 #print feat.keys()
+
+
+# pickle2

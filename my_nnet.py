@@ -6,8 +6,7 @@ import os,sys,random,time
 import argparse
 rng = np.random
 ####################
-data_dir = '../data/'
-#hidden layer topology
+data_dir = 'data/'
 nH = [69,512,48]
 batch_size = 128
 learning_rate = sys.argv[2] #0.5
@@ -46,9 +45,8 @@ def load_data(ark):
     s = time.time()
     print "loading data for "+ark+"ing set"
     feat = pickle.load(open(ark,'r'))
-    # normalization
     x = feat[:,1:]
-    x = (x - x.mean(axis=0))/x.std(axis=0)
+    x = (x - x.mean(axis=0))/x.std(axis=0)  # normalization
     shared_x = theano.shared(np.asarray(x,dtype=theano.config.floatX),borrow=True)
     shared_y = theano.shared(np.asarray(feat[:,0],dtype=theano.config.floatX),borrow=True)
     print "loaded data for "+ark+"ing set"
@@ -56,7 +54,7 @@ def load_data(ark):
     return shared_x, T.cast(shared_y,'int32'), len(feat)/batch_size
 
 class SimpleNet():
-    def __init__(self, nL):
+    def __init__(self, nL,X,Y):
         index = T.lscalar()
         x = T.matrix('x')
         y = T.ivector('y')
@@ -84,10 +82,6 @@ class SimpleNet():
             if i==len(nL)-2:
                 return T.nnet.softmax( T.dot(self.h[i], self.w[i]) + self.b[i] )
             self.h.append(activH(T.dot(self.h[i], self.w[i]) + self.b[i]))
-        #    if i==len(nL)-2:
-        #        activ=T.nnet.softmax
-        #    self.h.append(activ(T.dot(self.h[i], self.w[i]) + self.b[i]))
-        #return self.h[-1]
 
 def my_updates(param,grads):
     updates = []
@@ -128,25 +122,19 @@ def my_updates(param,grads):
 
     return updates
 
-def run(nn):
+def run():
     s = time.time()
+    print_info()
+    X,Y,nBatch = load_data(data_dir+'dev')
+    nn = SimpleNet(nH,X,Y)
+    
     for epoch in xrange(nEpoch):
-        # train
         for index in xrange(nBatch):
             nn.train(index)
             sys.stderr.write('\rtraining progress: epoch %d batch %d' %(epoch, index) )
-        # validate
         errs = [ nn.predict(index)[0] for index in xrange(nBatch) ]
         print '\taccuracy on training set:', 1 - np.mean(errs)
     # test TODO
     print "\n",time.time()-s," s\n"
 
-#if __name__ == '__main__':
-print_info()
-X,Y,nBatch = load_data(data_dir+'dev')
-nn = SimpleNet(nH)
-run(nn)
-del X,Y,nBatch,nn
-X,Y,nBatch = load_data(data_dir+'train')
-nn = SimpleNet(nH)
-run(nn)
+run()
